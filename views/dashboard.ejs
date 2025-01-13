@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voucher Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      h1,
+      h2 {
+        color: #2c3e50;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .dashboard-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .qr-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .qr-image {
+        border: 2px solid #333;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 100%;
+        height: auto;
+      }
+
+      .voucher-list {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .voucher-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .voucher-item:last-child {
+        border-bottom: none;
+      }
+
+      .voucher-details {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .status {
+        background-color: #28a745;
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Section -->
+      <div class="header">
+        <h1>Voucher Management System</h1>
+        <div class="dashboard-buttons">
+          <a href="/settings" class="btn btn-success" style="font-weight: bold"
+            >Settings</a
+          >
+          <a href="/logout" class="btn btn-danger" style="font-weight: bold"
+            >Logout</a
+          >
+        </div>
+      </div>
+
+      <!-- Generate QR Code Section -->
+      <div class="qr-container">
+        <h3>Generate New Voucher</h3>
+        <form method="POST" action="/dashboard/generate-qr">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Generate QR Code
+          </button>
+        </form>
+
+        <!-- QR Code Generation Section -->
+        <% if (qrCodeImage && latestVoucher) { %>
+        <script>
+          Swal.fire({
+            icon: "success",
+            title: "QR Code Generated!",
+            text: "Voucher <%= latestVoucher.voucher_code %> was successfully generated!",
+            timer: 2500,
+            showConfirmButton: false,
+          });
+        </script>
+        <div style="margin-top: 20px">
+          <h3>Generated QR Code:</h3>
+          <img src="<%= qrCodeImage %>" alt="QR Code" class="qr-image" />
+          <!-- Displaying Voucher Details -->
+          <div
+            style="
+              margin-top: 15px;
+              text-align: center;
+              font-size: 16px;
+              color: #333;
+            "
+          >
+            <p>
+              <strong>Voucher Number:</strong> <%= latestVoucher.voucher_code ||
+              'N/A' %>
+            </p>
+            <p>
+              <strong>Generated Date:</strong> <%= latestVoucher.generatedDate ?
+              new Date(latestVoucher.generatedDate).toLocaleDateString() : 'N/A'
+              %>
+            </p>
+            <p>
+              <strong>Expiry Date:</strong> <%= latestVoucher.expiryDate ? new
+              Date(latestVoucher.expiryDate).toLocaleDateString() : 'N/A' %>
+            </p>
+          </div>
+          <div
+            class="actions"
+            style="
+              margin-top: 20px;
+              display: flex;
+              justify-content: center;
+              gap: 15px;
+            "
+          >
+            <button
+              onclick="printVoucher('<%= latestVoucher.voucher_code %>')"
+              class="btn btn-primary"
+              style="padding: 10px 20px; border-radius: 5px"
+            >
+              <i class="fas fa-print"></i> Print Voucher
+            </button>
+            <a
+              href="/voucher/export-pdf?voucher_code=<%= latestVoucher.voucher_code %>"
+              class="btn btn-primary"
+              download
+              style="padding: 10px 20px; border-radius: 5px"
+            >
+              <i class="fas fa-file-pdf"></i> Download PDF
+            </a>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Existing Vouchers List -->
+      <h2>Recent Vouchers</h2>
+      <div class="voucher-list">
+        <% if (vouchers.length > 0) { %> <% vouchers.sort((a, b) => new
+        Date(b.generated_date) - new Date(a.generated_date)); %> <%
+        vouchers.forEach(voucher => { %>
+        <div class="voucher-item">
+          <div class="voucher-details">
+            <span><strong>Voucher #:</strong> <%= voucher.voucher_code %></span>
+            <span
+              ><strong>Generated Date:</strong> <%=
+              voucher.generated_date.toISOString().split('T')[0] %></span
+            >
+            <span
+              ><strong>Expiry Date:</strong> <%=
+              voucher.expiry_date.toISOString().split('T')[0] %></span
+            >
+
+            <% if (new Date(voucher.expiry_date) < new Date()) { %>
+            <span
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 8px 15px;
+                border-radius: 25px;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                background-color: #dc3545;
+                border: 1px solid #b21f2d;
+                box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+              "
+            >
+              <i class="fas fa-times-circle"></i> Expired
+            </span>
+            <% } else { %>
+            <span
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 8px 15px;
+                border-radius: 25px;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                background-color: #28a745;
+                border: 1px solid #1e7e34;
+                box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+              "
+            >
+              <i class="fas fa-check-circle"></i> Active
+            </span>
+            <% } %>
+          </div>
+          <div class="actions">
+            <a
+              href="/voucher/export-pdf?voucher_code=<%= voucher.voucher_code %>"
+              class="btn btn-primary"
+              download
+            >
+              <i class="fas fa-file-pdf"></i>
+            </a>
+            <button
+              onclick="printVoucher('<%= voucher.voucher_code %>')"
+              class="btn btn-primary"
+            >
+              <i class="fas fa-print"></i>
+            </button>
+          </div>
+        </div>
+        <% }); %> <% } else { %>
+        <p>No vouchers available.</p>
+        <% } %>
+      </div>
+
+      <div class="pagination" style="text-align: center; margin-top: 20px">
+        <% if (totalPages > 1) { %> <% if (currentPage > 1) { %>
+        <a href="/dashboard?page=<%= currentPage - 1 %>" class="btn btn-primary"
+          >Previous</a
+        >
+        <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+        <a
+          href="/dashboard?page=<%= i %>"
+          class="btn <%= i === currentPage ? 'btn-success' : 'btn-primary' %>"
+        >
+          <%= i %>
+        </a>
+        <% } %> <% if (currentPage < totalPages) { %>
+        <a href="/dashboard?page=<%= currentPage + 1 %>" class="btn btn-primary"
+          >Next</a
+        >
+        <% } %> <% } %>
+      </div>
+    </div>
+
+    <script>
+      function printVoucher(voucherCode) {
+        const pdfUrl = `/voucher/export-pdf?voucher_code=${voucherCode}`;
+        const printWindow = window.open(pdfUrl, "_blank");
+        if (printWindow) {
+          printWindow.onload = function () {
+            printWindow.focus();
+            printWindow.print(); 
+          };
+        } else {
+          alert("Pop-up blocked. Please allow pop-ups for this site.");
+        }
+      }
+    </script>
+  </body>
+</html>

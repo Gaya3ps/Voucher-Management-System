@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f7f7f7;
+    "
+  >
+    <h1 style="text-align: center">Settings Page</h1>
+
+    <% if (successMessage) { %>
+    <p
+      style="
+        color: green;
+        text-align: center;
+        font-size: 18px;
+        margin-top: 10px;
+      "
+    >
+      <%= successMessage %>
+    </p>
+    <% } %>
+
+    <form
+      id="settingsForm"
+      method="POST"
+      action="/settings"
+      onsubmit="return validateSettingsForm()"
+      style="max-width: 500px; margin: auto"
+    >
+      <div style="margin-bottom: 15px">
+        <label for="voucherTitle">Voucher Title:</label>
+        <input
+          type="text"
+          id="voucherTitle"
+          name="voucherTitle"
+          value="<%= settings.voucher_title || '' %>"
+          required
+          style="width: 100%; padding: 8px"
+        />
+        <span id="voucherTitleError" style="color: red; display: none"
+          >Voucher title is required.</span
+        >
+      </div>
+
+      <div style="margin-bottom: 15px">
+        <label for="maxExpiryDays">Max Expiry Days:</label>
+        <input
+          type="number"
+          id="maxExpiryDays"
+          name="maxExpiryDays"
+          value="<%= settings.max_expiry_days || '' %>"
+          required
+          style="width: 100%; padding: 8px"
+        />
+        <span id="expiryDaysError" style="color: red; display: none"
+          >Please enter a valid number greater than 0.</span
+        >
+      </div>
+
+      <div style="margin-bottom: 15px">
+        <label for="width">Voucher Width (mm):</label>
+        <input
+          type="number"
+          id="width"
+          name="width"
+          value="<%= settings.width || '' %>"
+          required
+          style="width: 100%; padding: 8px"
+        />
+        <span id="widthError" style="color: red; display: none"
+          >Width must be at least 50mm.</span
+        >
+      </div>
+
+      <div style="margin-bottom: 15px">
+        <label for="height">Voucher Height (mm):</label>
+        <input
+          type="number"
+          id="height"
+          name="height"
+          value="<%= settings.height || '' %>"
+          required
+          style="width: 100%; padding: 8px"
+        />
+        <span id="heightError" style="color: red; display: none"
+          >Height must be at least 50mm.</span
+        >
+      </div>
+
+      <div style="margin-bottom: 15px">
+        <label for="titleFontSize">Title Font Size:</label>
+        <input
+          type="number"
+          id="titleFontSize"
+          name="titleFontSize"
+          value="<%= settings.title_font_size || '' %>"
+          required
+          style="width: 100%; padding: 8px"
+        />
+        <span id="titleFontSizeError" style="color: red; display: none"
+          >Please enter a font size between 10 and 50.</span
+        >
+      </div>
+
+      <div style="margin-bottom: 15px">
+        <label for="normalFontSize">Normal Font Size:</label>
+        <input
+          type="number"
+          id="normalFontSize"
+          name="normalFontSize"
+          value="<%= settings.normal_font_size || '' %>"
+          required
+          style="width: 100%; padding: 8px"
+        />
+        <span id="normalFontSizeError" style="color: red; display: none"
+          >Please enter a font size between 8 and 30.</span
+        >
+      </div>
+
+      <button
+        type="submit"
+        style="
+          background-color: #007bff;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          width: 100%;
+        "
+      >
+        Save Settings
+      </button>
+    </form>
+
+    <script>
+      function validateSettingsForm() {
+        let isValid = true;
+
+        // Form fields
+        const voucherTitle = document
+          .getElementById("voucherTitle")
+          .value.trim();
+        const maxExpiryDays = parseInt(
+          document.getElementById("maxExpiryDays").value
+        );
+        const width = parseInt(document.getElementById("width").value);
+        const height = parseInt(document.getElementById("height").value);
+        const titleFontSize = parseInt(
+          document.getElementById("titleFontSize").value
+        );
+        const normalFontSize = parseInt(
+          document.getElementById("normalFontSize").value
+        );
+
+        // Error elements
+        const voucherTitleError = document.getElementById("voucherTitleError");
+        const expiryDaysError = document.getElementById("expiryDaysError");
+        const widthError = document.getElementById("widthError");
+        const heightError = document.getElementById("heightError");
+        const titleFontSizeError =
+          document.getElementById("titleFontSizeError");
+        const normalFontSizeError = document.getElementById(
+          "normalFontSizeError"
+        );
+
+        // Voucher Title Validation
+        if (voucherTitle === "") {
+          voucherTitleError.style.display = "block";
+          isValid = false;
+        } else {
+          voucherTitleError.style.display = "none";
+        }
+
+        // Max Expiry Days Validation
+        if (isNaN(maxExpiryDays) || maxExpiryDays <= 0) {
+          expiryDaysError.style.display = "block";
+          isValid = false;
+        } else {
+          expiryDaysError.style.display = "none";
+        }
+
+        // Width Validation
+        if (isNaN(width) || width < 50) {
+          widthError.style.display = "block";
+          isValid = false;
+        } else {
+          widthError.style.display = "none";
+        }
+
+        // Height Validation
+        if (isNaN(height) || height < 50) {
+          heightError.style.display = "block";
+          isValid = false;
+        } else {
+          heightError.style.display = "none";
+        }
+
+        // Title Font Size Validation
+        if (isNaN(titleFontSize) || titleFontSize < 10 || titleFontSize > 50) {
+          titleFontSizeError.style.display = "block";
+          isValid = false;
+        } else {
+          titleFontSizeError.style.display = "none";
+        }
+
+        // Normal Font Size Validation
+        if (
+          isNaN(normalFontSize) ||
+          normalFontSize < 8 ||
+          normalFontSize > 30
+        ) {
+          normalFontSizeError.style.display = "block";
+          isValid = false;
+        } else {
+          normalFontSizeError.style.display = "none";
+        }
+
+        return isValid; 
+      }
+    </script>
+  </body>
+</html>

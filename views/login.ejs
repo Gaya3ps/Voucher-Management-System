@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    style="
+      background-color: #f5f7fa;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    "
+  >
+    <div
+      style="
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+      "
+    >
+      <h2
+        style="
+          text-align: center;
+          margin-bottom: 1.5rem;
+          font-weight: 600;
+          color: #333;
+        "
+      >
+        Login
+      </h2>
+      <form
+        id="loginForm"
+        method="POST"
+        action="/login"
+        onsubmit="return validateForm()"
+      >
+        <div style="margin-bottom: 1rem">
+          <input
+            id="username"
+            type="text"
+            name="username"
+            placeholder="Enter Username"
+            required
+            style="
+              width: 100%;
+              padding: 0.8rem;
+              border: 1px solid #ddd;
+              border-radius: 5px;
+              font-size: 1rem;
+            "
+          />
+          <span
+            id="usernameError"
+            style="color: red; font-size: 0.9rem; display: none"
+            >Username is required</span
+          >
+        </div>
+        <div style="margin-bottom: 1rem">
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            required
+            style="
+              width: 100%;
+              padding: 0.8rem;
+              border: 1px solid #ddd;
+              border-radius: 5px;
+              font-size: 1rem;
+            "
+          />
+          <span
+            id="passwordError"
+            style="color: red; font-size: 0.9rem; display: none"
+            >Password is required</span
+          >
+        </div>
+        <!-- **Error message from the server** -->
+        <% if (error) { %>
+        <div style="color: red; text-align: center; margin-bottom: 1rem">
+          <%= error %>
+        </div>
+        <% } %>
+
+        <button
+          type="submit"
+          style="
+            width: 100%;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+          "
+        >
+          Login
+        </button>
+      </form>
+    </div>
+
+    <script>
+      function validateForm() {
+        let isValid = true;
+        const usernameField = document.getElementById("username");
+        const passwordField = document.getElementById("password");
+        const usernameError = document.getElementById("usernameError");
+        const passwordError = document.getElementById("passwordError");
+
+        // Username validation
+        if (usernameField.value.trim() === "") {
+          usernameError.style.display = "block";
+          isValid = false;
+        } else {
+          usernameError.style.display = "none";
+        }
+
+        // Password validation
+        if (passwordField.value.trim() === "") {
+          passwordError.style.display = "block";
+          isValid = false;
+        } else {
+          passwordError.style.display = "none";
+        }
+
+        return isValid; 
+      }
+    </script>
+  </body>
+</html>
