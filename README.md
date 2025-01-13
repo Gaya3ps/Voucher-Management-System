@@ -48,9 +48,9 @@ A Voucher Management System built using Node.js, Express, and MSSQL. This applic
 
 
 ## Future Enhancements
--Add user registration
--Implement forgot password feature
--Enhance styling with a responsive design
+- Add user registration
+- Implement forgot password feature
+- Enhance styling with a responsive design
 
 
 
